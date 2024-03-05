@@ -1,5 +1,7 @@
-const App = () => {
-  return <h1 className="text-3xl font-bold underline">Hello world!</h1>;
-};
+import { FC } from 'react'
 
-export default App;
+const App: FC = () => {
+  return <h1 className="text-3xl font-bold underline">Hello world!</h1>
+}
+
+export default App

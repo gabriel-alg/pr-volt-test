@@ -19,6 +19,8 @@
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
     "@vitejs/plugin-react": "^4.2.1",
+    "@wemake-services/eslint-config-typescript": "^3.1.1",
+    "@wemake-services/stylelint-config-scss": "^4.0.1",
     "autoprefixer": "^10.4.18",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
