@@ -1,6 +1,6 @@
 export interface ITask {
-  id: number
+  id: string
   title: string
-  description?: string
+  bgColor: string
   completed: boolean
 }
