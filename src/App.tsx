@@ -7,11 +7,11 @@ import {
 } from 'react-beautiful-dnd'
 import { useAppDispatch, useAppSelector } from './hooks/redux-hooks'
 import { addTask, moveTask } from './store/slices/taskSlice'
+import Task from './components/Task'
 
 const App: FC = () => {
   const dispatch = useAppDispatch()
   const [input, setInput] = useState('')
-  const [bgColor] = useState('#ffffff')
 
   const tasks = useAppSelector(state => state.tasks.taskList)
 
@@ -19,7 +19,7 @@ const App: FC = () => {
     e.preventDefault()
 
     if (input.length > 0 && input.length <= 50) {
-      dispatch(addTask({ title: input, bgColor, completed: false }))
+      dispatch(addTask({ title: input, bgColor: 'red', completed: false }))
       setInput('')
     }
   }
@@ -52,63 +52,71 @@ const App: FC = () => {
       </form>
 
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Droppable droppableId="uncompletedTasks">
-          {provided => (
-            <div
-              className="mt-4 rounded bg-blue-100 p-4"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              <h2 className="mb-2 text-lg font-bold">Tasks to do</h2>
-              {tasks
-                .filter(task => !task.completed)
-                .map((task, index) => (
-                  <Draggable key={task.id} draggableId={task.id} index={index}>
-                    {provided => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`mb-2 cursor-move rounded p-2 shadow-lg ${task.bgColor}`}
-                      >
-                        {task.title}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+        <div className="mx-auto mt-6 flex max-w-screen-xl">
+          <Droppable droppableId="uncompletedTasks">
+            {provided => (
+              <div
+                className="w-1/2 rounded bg-blue-100 p-4"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                <h2 className="mb-2 text-lg font-bold">Tasks to do</h2>
+                {tasks
+                  .filter(task => !task.completed)
+                  .map((task, index) => (
+                    <Draggable
+                      key={task.id}
+                      draggableId={task.id}
+                      index={index}
+                    >
+                      {provided => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <Task task={task} />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
 
-        <Droppable droppableId="completedTasks">
-          {provided => (
-            <div
-              className="mt-6 rounded bg-green-100 p-4"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              <h2 className="mb-2 text-lg font-bold">Completed Tasks</h2>
-              {tasks
-                .filter(task => task.completed)
-                .map((task, index) => (
-                  <Draggable key={task.id} draggableId={task.id} index={index}>
-                    {provided => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`mb-2 cursor-move rounded p-2 shadow-lg ${task.bgColor}`}
-                      >
-                        {task.title}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+          <Droppable droppableId="completedTasks">
+            {provided => (
+              <div
+                className="w-1/2 rounded bg-green-100 p-4"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                <h2 className="mb-2 text-lg font-bold">Completed Tasks</h2>
+                {tasks
+                  .filter(task => task.completed)
+                  .map((task, index) => (
+                    <Draggable
+                      key={task.id}
+                      draggableId={task.id}
+                      index={index}
+                    >
+                      {provided => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <Task task={task} />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </div>
       </DragDropContext>
     </div>
   )

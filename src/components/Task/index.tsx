@@ -1,7 +1,7 @@
-import React, { FC, useState } from 'react'
+import { ChangeEvent, FC, MouseEventHandler, useState } from 'react'
 import { useAppDispatch } from '../../hooks/redux-hooks.ts'
 import { ITask } from '../../types'
-import { updateTask } from '../../store/slices/taskSlice.ts' // Import the action to update a task
+import { updateTask } from '../../store/slices/taskSlice.ts'
 
 interface TaskProps {
   task: ITask
@@ -13,16 +13,22 @@ const Task: FC<TaskProps> = ({ task }) => {
   const [title, setTitle] = useState(task.title)
   const [bgColor, setBgColor] = useState(task.bgColor)
 
-  const handleSave = () => {
+  const handleSave: MouseEventHandler<HTMLButtonElement> = e => {
+    e.stopPropagation()
     dispatch(updateTask({ ...task, title, bgColor }))
     setIsEditing(false)
   }
 
-  const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCancel: MouseEventHandler<HTMLButtonElement> = e => {
+    e.stopPropagation()
+    setIsEditing(false)
+  }
+
+  const handleColorChange = (event: ChangeEvent<HTMLInputElement>) => {
     setBgColor(event.target.value)
   }
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
   }
 
@@ -47,13 +53,8 @@ const Task: FC<TaskProps> = ({ task }) => {
             className="p-2"
           />
           <div className="flex justify-end space-x-2 p-2">
-            <button className="btn btn-primary" onClick={handleSave}>
-              Save
-            </button>
-            <button
-              className="btn btn-ghost"
-              onClick={() => setIsEditing(false)}
-            >
+            <button onClick={handleSave}>Save</button>
+            <button className="btn btn-ghost" onClick={handleCancel}>
               Cancel
             </button>
           </div>
