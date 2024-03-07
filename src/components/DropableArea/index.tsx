@@ -4,6 +4,7 @@ import { Draggable, DroppableProvided } from 'react-beautiful-dnd'
 import Task from '../Task'
 
 import { ISection, ITask } from '../../types'
+import { twMerge } from 'tailwind-merge'
 
 interface IDroppableArea {
   provided: DroppableProvided
@@ -13,7 +14,10 @@ interface IDroppableArea {
 
 const DroppableArea: FC<IDroppableArea> = ({ provided, section, taskList }) => (
   <div
-    className={`flex w-1/2 flex-col gap-2 rounded bg-${section.color}-100 p-4`}
+    className={twMerge(
+      'flex w-1/2 flex-col gap-2 rounded p-4',
+      `bg-${section.color}-100`,
+    )}
     {...provided.droppableProps}
     ref={provided.innerRef}
   >
