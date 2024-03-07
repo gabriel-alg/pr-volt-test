@@ -1,25 +1,35 @@
 import { FC, FormEventHandler, useState } from 'react'
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from 'react-beautiful-dnd'
+import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd'
+
+import DroppableArea from './components/DropableArea'
 import { useAppDispatch, useAppSelector } from './hooks/redux-hooks'
 import { addTask, moveTask } from './store/slices/taskSlice'
-import Task from './components/Task'
+
+import { SECTION_LIST } from './contants'
+
+import { TaskListType } from './types'
 
 const App: FC = () => {
   const dispatch = useAppDispatch()
   const [input, setInput] = useState('')
 
-  const tasks = useAppSelector(state => state.tasks.taskList)
+  const allTaskList = useAppSelector(state => state.tasks.allTasks)
+  const todoTaskList = useAppSelector(state => state.tasks.todoTaskList)
+  const completedTaskList = useAppSelector(
+    state => state.tasks.completedTaskList,
+  )
+
+  const taskLists = {
+    all: allTaskList,
+    todo: todoTaskList,
+    completed: completedTaskList,
+  }
 
   const handleAddTask: FormEventHandler = e => {
     e.preventDefault()
 
     if (input.length > 0 && input.length <= 50) {
-      dispatch(addTask({ title: input, bgColor: 'red', completed: false }))
+      dispatch(addTask({ title: input }))
       setInput('')
     }
   }
@@ -31,7 +41,8 @@ const App: FC = () => {
       moveTask({
         fromIndex: result.source.index,
         toIndex: result.destination.index,
-        toCompleted: result.destination.droppableId === 'completedTasks',
+        fromSection: result.source.droppableId as TaskListType,
+        toSection: result.destination.droppableId as TaskListType,
       }),
     )
   }
@@ -53,69 +64,17 @@ const App: FC = () => {
 
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <div className="mx-auto mt-6 flex max-w-screen-xl">
-          <Droppable droppableId="uncompletedTasks">
-            {provided => (
-              <div
-                className="w-1/2 rounded bg-blue-100 p-4"
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                <h2 className="mb-2 text-lg font-bold">Tasks to do</h2>
-                {tasks
-                  .filter(task => !task.completed)
-                  .map((task, index) => (
-                    <Draggable
-                      key={task.id}
-                      draggableId={task.id}
-                      index={index}
-                    >
-                      {provided => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <Task task={task} />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-
-          <Droppable droppableId="completedTasks">
-            {provided => (
-              <div
-                className="w-1/2 rounded bg-green-100 p-4"
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                <h2 className="mb-2 text-lg font-bold">Completed Tasks</h2>
-                {tasks
-                  .filter(task => task.completed)
-                  .map((task, index) => (
-                    <Draggable
-                      key={task.id}
-                      draggableId={task.id}
-                      index={index}
-                    >
-                      {provided => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <Task task={task} />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+          {SECTION_LIST.map(section => (
+            <Droppable key={section.id} droppableId={section.id}>
+              {provided => (
+                <DroppableArea
+                  provided={provided}
+                  section={section}
+                  taskList={taskLists[section.id]}
+                />
+              )}
+            </Droppable>
+          ))}
         </div>
       </DragDropContext>
     </div>

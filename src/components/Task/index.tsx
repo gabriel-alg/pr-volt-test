@@ -11,21 +11,17 @@ const Task: FC<TaskProps> = ({ task }) => {
   const dispatch = useAppDispatch()
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(task.title)
-  const [bgColor, setBgColor] = useState(task.bgColor)
 
   const handleSave: MouseEventHandler<HTMLButtonElement> = e => {
     e.stopPropagation()
-    dispatch(updateTask({ ...task, title, bgColor }))
+    dispatch(updateTask({ ...task, title }))
     setIsEditing(false)
   }
 
   const handleCancel: MouseEventHandler<HTMLButtonElement> = e => {
     e.stopPropagation()
     setIsEditing(false)
-  }
-
-  const handleColorChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setBgColor(event.target.value)
+    setTitle(task.title)
   }
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,17 +31,11 @@ const Task: FC<TaskProps> = ({ task }) => {
   return (
     <div
       className={`cursor-pointer overflow-hidden rounded-lg shadow-lg ${isEditing ? 'ring-2 ring-blue-300' : ''}`}
-      style={{ borderTopColor: bgColor }}
+      style={{ borderTopColor: task.bgColor }}
       onClick={() => setIsEditing(true)}
     >
       {isEditing ? (
-        <div className="flex flex-col">
-          <input
-            type="color"
-            value={bgColor}
-            onChange={handleColorChange}
-            className="w-full"
-          />
+        <form className="flex flex-col">
           <input
             type="text"
             value={title}
@@ -54,16 +44,20 @@ const Task: FC<TaskProps> = ({ task }) => {
           />
           <div className="flex justify-end space-x-2 p-2">
             <button onClick={handleSave}>Save</button>
-            <button className="btn btn-ghost" onClick={handleCancel}>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={handleCancel}
+            >
               Cancel
             </button>
           </div>
-        </div>
+        </form>
       ) : (
         <div className="flex h-full flex-col justify-between">
           <div
             className="bg-opacity-50 p-4"
-            style={{ backgroundColor: bgColor }}
+            style={{ backgroundColor: task.bgColor }}
           />
           <div className="bg-white p-4">
             <p className="text-lg font-semibold">{title}</p>

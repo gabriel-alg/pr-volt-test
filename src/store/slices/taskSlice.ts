@@ -1,58 +1,78 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { ITask } from '../../types'
+import { ITask, TaskListType } from '../../types'
+import { TASK_LIST_DICTIONARY } from '../../contants'
 
 interface IState {
-  taskList: ITask[]
+  completedTaskList: ITask[]
+  todoTaskList: ITask[]
+  allTasks: ITask[]
 }
 
 const initialState: IState = {
-  taskList: [],
+  completedTaskList: [],
+  todoTaskList: [],
+  allTasks: [],
 }
 
 export const taskSlice = createSlice({
   name: 'task',
   initialState,
   reducers: {
-    addTask: (state, action: PayloadAction<Omit<ITask, 'id'>>) => {
-      const newtask: ITask = {
+    updateTask: (state, action: PayloadAction<ITask>) => {
+      const taskList = state[TASK_LIST_DICTIONARY[action.payload.taskList]]
+
+      const index = taskList.findIndex(task => task.id === action.payload.id)
+      if (index !== -1) {
+        taskList[index] = action.payload
+      }
+    },
+    addTask: (state, action: PayloadAction<Pick<ITask, 'title'>>) => {
+      const newTask: ITask = {
         id: uuidv4(),
+        completed: false,
+        bgColor: 'gray',
+        taskList: 'all',
         ...action.payload,
       }
-      state.taskList = [...state.taskList, newtask]
-    },
-    updateTask: (state, action: PayloadAction<ITask>) => {
-      const index = state.taskList.findIndex(
-        task => task.id === action.payload.id,
-      )
-      if (index !== -1) {
-        state.taskList[index] = action.payload
-      }
+      state.allTasks.push(newTask)
     },
     moveTask: (
       state,
       action: PayloadAction<{
-        fromIndex: number
         toIndex: number
-        toCompleted?: boolean
+        fromIndex: number
+        toSection: TaskListType
+        fromSection: TaskListType
       }>,
     ) => {
-      const { fromIndex, toIndex, toCompleted } = action.payload
+      const { fromIndex, toSection, fromSection, toIndex } = action.payload
+      const fromTaskList = state[TASK_LIST_DICTIONARY[fromSection]]
+      const toTaskList = state[TASK_LIST_DICTIONARY[toSection]]
 
-      if (fromIndex !== toIndex && toCompleted === undefined) {
-        const [movedTask] = state.taskList.splice(fromIndex, 1)
-        state.taskList.splice(toIndex, 0, movedTask)
+      const task = fromTaskList[fromIndex]
+
+      task.taskList = toSection
+
+      task.completed = false
+      task.bgColor = 'gray'
+
+      switch (toSection) {
+        case 'completed':
+          task.completed = true
+          task.bgColor = 'green'
+          break
+        case 'todo':
+          task.completed = false
+          task.bgColor = 'red'
+          break
+        case 'all':
+          break
       }
 
-      if (typeof toCompleted === 'boolean') {
-        const task = state.taskList[fromIndex]
-        if (task) {
-          task.completed = toCompleted
-          state.taskList.splice(fromIndex, 1)
-          state.taskList.splice(toIndex, 0, task)
-        }
-      }
+      fromTaskList.splice(fromIndex, 1)
+      toTaskList.splice(toIndex, 0, task)
     },
   },
 })
