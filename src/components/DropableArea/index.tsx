@@ -5,6 +5,7 @@ import Task from '../Task'
 
 import { ISection, ITask } from '../../types'
 import { twMerge } from 'tailwind-merge'
+import { SECTION_BG_COLOR_DICTIONARY } from '../../contants'
 
 interface IDroppableArea {
   provided: DroppableProvided
@@ -16,7 +17,7 @@ const DroppableArea: FC<IDroppableArea> = ({ provided, section, taskList }) => (
   <div
     className={twMerge(
       'flex w-1/2 flex-col gap-2 rounded p-4',
-      `bg-${section.color}-100`,
+      SECTION_BG_COLOR_DICTIONARY[section.id],
     )}
     {...provided.droppableProps}
     ref={provided.innerRef}

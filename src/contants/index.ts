@@ -11,3 +11,9 @@ export const TASK_LIST_DICTIONARY = {
   todo: 'todoTaskList',
   completed: 'completedTaskList',
 } as const
+
+export const SECTION_BG_COLOR_DICTIONARY = {
+  all: 'bg-gray-100',
+  todo: 'bg-blue-100',
+  completed: 'bg-green-100',
+} as const
